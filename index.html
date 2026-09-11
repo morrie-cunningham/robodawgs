@@ -196,7 +196,7 @@ table.data tbody tr:hover td { background: var(--paper-2); }
 .banners { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: flex-start; }
 .banner {
   clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
-  width: 150px; min-height: 150px; padding: 0.8rem 0.7rem 2.2rem;
+  width: 150px; height: 225px; padding: 0.8rem 0.7rem 2.2rem;
   color: #fdfaf2; text-align: center;
   display: flex; flex-direction: column; gap: 0.15rem;
 }
@@ -204,10 +204,10 @@ table.data tbody tr:hover td { background: var(--paper-2); }
 .banner.t-nationals { background: var(--ink); }
 .banner.t-states { background: var(--green-deep); }
 .banner .b-year { font-family: 'Graduate', serif; font-size: 1.25rem; line-height: 1.2; }
-.banner .b-tier { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; border-top: 1px solid rgba(253,250,242,0.4); border-bottom: 1px solid rgba(253,250,242,0.4); padding: 0.15rem 0; margin: 0.2rem 0; }
+.banner .b-tier { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; border-top: 1px solid rgba(253,250,242,0.4); border-bottom: 1px solid rgba(253,250,242,0.4); padding: 0.15rem 0; margin: 0.2rem 0; min-height: 2.1em; display: flex; align-items: center; justify-content: center; }
 .banner .b-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; }
 .banner .b-team { font-family: 'Graduate', serif; font-size: 0.95rem; margin-top: auto; }
-.banner .b-event { font-size: 0.6rem; opacity: 0.75; line-height: 1.25; }
+.banner .b-event { font-size: 0.6rem; opacity: 0.75; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .tier-tag {
   display: inline-block; margin-left: 0.45rem; padding: 0 0.35rem;
   font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;

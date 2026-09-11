@@ -477,8 +477,13 @@ footer {
     parts.forEach(p => teamNums.add(p.teamNumber));
     const eventIds = new Set(parts.map(p => p.event.id));
     const worlds = new Set(parts.filter(p => p.tier === 'Worlds').map(p => p.teamNumber + '|' + p.event.id));
-    let w = 0, l = 0, t = 0;
-    ranks.forEach(r => { if (!r.headToHead) return; w += r.wins || 0; l += r.losses || 0; t += r.ties || 0; });
+    let w = 0, l = 0, t = 0, tw = 0, twBest = 0, rkSum = 0, rkN = 0;
+    ranks.forEach(r => {
+      if (r.headToHead) { w += r.wins || 0; l += r.losses || 0; t += r.ties || 0; return; }
+      tw += (r.wins || 0) + (r.losses || 0) + (r.ties || 0);   // IQ teamwork matches (API logs them as ties)
+      if (r.high_score > twBest) twBest = r.high_score;
+      if (r.rank) { rkSum += r.rank; rkN++; }
+    });
     const winPct = (w + l + t) ? Math.round(100 * w / (w + l + t)) : null;
     const years = new Set(parts.map(p => p.year).filter(y => y != null));
 
@@ -490,7 +495,9 @@ footer {
       { label: 'Teams', value: fmt(teamNums.size), sub: 'competing all-time' },
       { label: 'Events attended', value: fmt(eventIds.size), sub: fmt(parts.length) + ' team entries' },
       { label: 'Worlds entries', value: fmt(worlds.size), sub: `across ${fmt(years.size)} seasons` },
-      { label: 'Match record', value: winPct == null ? '—' : winPct + '%', sub: `${fmt(w)} W – ${fmt(l)} L – ${fmt(t)} T` },
+      winPct == null && tw > 0
+        ? { label: 'Teamwork matches', value: fmt(tw), sub: `best score ${fmt(twBest)}${rkN ? ' · avg rank ' + (rkSum / rkN).toFixed(1) : ''}` }
+        : { label: 'Match record', value: winPct == null ? '—' : winPct + '%', sub: `${fmt(w)} W – ${fmt(l)} L – ${fmt(t)} T${tw ? ` · +${fmt(tw)} IQ teamwork` : ''}` },
     ];
     tiles.forEach(td => {
       const tile = el('div', 'stat-tile' + (td.hero ? ' hero' : ''));
@@ -787,7 +794,12 @@ footer {
     });
     ranks.forEach(r => {
       const s = slot(r.teamNumber, r.division);
-      if (!r.headToHead) { s.coop = true; return; }
+      if (!r.headToHead) {
+        s.coop = true;
+        s.tw = (s.tw || 0) + (r.wins || 0) + (r.losses || 0) + (r.ties || 0);
+        if (r.rank) { s.rkSum = (s.rkSum || 0) + r.rank; s.rkN = (s.rkN || 0) + 1; }
+        return;
+      }
       s.w += r.wins || 0; s.l += r.losses || 0; s.t += r.ties || 0;
     });
     D.skills.forEach(sk => {
@@ -812,11 +824,12 @@ footer {
       { key: 'majors', label: 'Major', num: true },
       { key: 'excellence', label: 'Excel.', num: true },
       { key: 'eventCount', label: 'Events', num: true },
-      { key: 'record', label: 'W–L–T', num: true },
-      { key: 'winPct', label: 'Win %', num: true },
+      { key: 'record', label: 'W–L–T / TW', num: true },
+      { key: 'winPct', label: 'Win % / Rank', num: true },
       { key: 'bestSkills', label: 'Best Skills', num: true },
     ];
     const sortKey = lbSort.col === 'record' ? 'w' : lbSort.col;
+    list.forEach(x => { if (lbSort.col === 'record' && !x.w && x.tw) x.w = 0; });
     list.sort((a, b) => {
       let va = a[sortKey], vb = b[sortKey];
       if (va == null) va = -Infinity; if (vb == null) vb = -Infinity;
@@ -855,8 +868,10 @@ footer {
       tr.appendChild(el('td', 'num', fmt(s.excellence)));
       tr.appendChild(el('td', 'num', fmt(s.eventCount)));
       const noWLT = s.coop && !(s.w + s.l + s.t);
-      tr.appendChild(el('td', 'num', noWLT ? '—' : `${s.w}–${s.l}–${s.t}`));
-      tr.appendChild(el('td', 'num', (noWLT || s.winPct < 0) ? '—' : Math.round(s.winPct * 100) + '%'));
+      tr.appendChild(el('td', 'num', noWLT ? (s.tw ? `${fmt(s.tw)} TW` : '—') : `${s.w}–${s.l}–${s.t}`));
+      tr.appendChild(el('td', 'num', noWLT
+        ? (s.rkN ? 'rank ' + (s.rkSum / s.rkN).toFixed(1) : '—')
+        : (s.winPct < 0 ? '—' : Math.round(s.winPct * 100) + '%')));
       tr.appendChild(el('td', 'num', s.bestSkills == null ? '—' : fmt(s.bestSkills)));
       tbody.appendChild(tr);
     });

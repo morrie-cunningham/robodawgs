@@ -233,7 +233,7 @@ footer {
   <header>
     <div class="masthead-kicker">Grandville Public Schools · Competitive Robotics</div>
     <h1>RoboDawgs Record Book</h1>
-    <span class="masthead-sub">All-Time Awards &amp; Competition Results · Est. 1998</span>
+    <span class="masthead-sub">All-Time VEX Robotics · Awards &amp; Competition Results · Est. 1998</span>
   </header>
   <hr class="double-rule">
 
@@ -368,7 +368,7 @@ footer {
     if (/state championship/.test(n) || ev.level === 'Regional') return 'States';
     return 'Local';
   }
-  const TIER_LABEL = { Worlds: 'World Championship', Nationals: 'National / Signature', States: 'State Championship' };
+  const TIER_LABEL = { Worlds: 'World Championship', Nationals: 'Signature Event', States: 'State Championship' };
 
   // Attach event/season info to awards, rankings, skills
   D.awards.forEach(a => {
@@ -484,7 +484,7 @@ footer {
 
     const tiles = [
       { label: 'Total awards', value: fmt(awards.length), hero: true, sub: 'recorded on RobotEvents' },
-      { label: 'Major championships', value: fmt(majors.length), sub: `${fmt(worldsT)} Worlds · ${fmt(natT)} National · ${fmt(stateT)} State` },
+      { label: 'Major championships', value: fmt(majors.length), sub: `${fmt(worldsT)} Worlds · ${fmt(natT)} Signature · ${fmt(stateT)} State` },
       { label: 'Event championships', value: fmt(localChamps), sub: 'local tournament titles' },
       { label: 'Excellence Awards', value: fmt(excellence), sub: 'judged best overall' },
       { label: 'Teams', value: fmt(teamNums.size), sub: 'competing all-time' },
@@ -908,7 +908,7 @@ footer {
       }
       if (a.tier !== 'Local') {
         tdAward.appendChild(el('span', 'tier-tag t-' + a.tier.toLowerCase(),
-          a.tier === 'Worlds' ? 'Worlds' : a.tier === 'Nationals' ? 'National' : 'State'));
+          a.tier === 'Worlds' ? 'Worlds' : a.tier === 'Nationals' ? 'Signature' : 'State'));
       }
       tr.appendChild(tdAward);
       tr.appendChild(el('td', null, a.eventName));
@@ -928,7 +928,7 @@ footer {
   // ===== filters UI =====
   function buildFilters() {
     const chips = document.getElementById('divisionChips');
-    const all = [{ key: 'all', name: 'All Divisions' }, ...DIVISIONS];
+    const all = [{ key: 'all', name: 'All Programs' }, ...DIVISIONS];
     all.forEach(d => {
       const b = el('button', 'tab' + (state.division === d.key ? ' active' : ''), d.name);
       b.addEventListener('click', () => {

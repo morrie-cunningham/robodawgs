@@ -467,11 +467,13 @@ footer {
     const row = document.getElementById('kpiRow');
     row.textContent = '';
 
-    const majors = awards.filter(a => a.isChamp && a.tier !== 'Local');
+    const champAll = awards.filter(a => a.isChamp);
+    const majors = champAll.filter(a => a.tier !== 'Local');
     const worldsT = majors.filter(a => a.tier === 'Worlds').length;
     const natT = majors.filter(a => a.tier === 'Nationals').length;
     const stateT = majors.filter(a => a.tier === 'States').length;
-    const localChamps = awards.filter(a => a.isChamp && a.tier === 'Local').length;
+    const tournN = champAll.filter(a => /tournament champion/i.test(a.title)).length;
+    const teamworkN = champAll.filter(a => /teamwork champion/i.test(a.title)).length;
     const excellence = awards.filter(a => a.isExcellence).length;
     const teamNums = new Set(awards.map(a => a.teamNumber));
     parts.forEach(p => teamNums.add(p.teamNumber));
@@ -489,8 +491,8 @@ footer {
 
     const tiles = [
       { label: 'Total awards', value: fmt(awards.length), hero: true, sub: 'recorded on RobotEvents' },
+      { label: 'Championships', value: fmt(champAll.length), sub: `${fmt(tournN)} tournament · ${fmt(teamworkN)} teamwork` },
       { label: 'Major championships', value: fmt(majors.length), sub: `${fmt(worldsT)} Worlds · ${fmt(natT)} Signature · ${fmt(stateT)} State` },
-      { label: 'Event championships', value: fmt(localChamps), sub: 'local tournament titles' },
       { label: 'Excellence Awards', value: fmt(excellence), sub: 'judged best overall' },
       { label: 'Teams', value: fmt(teamNums.size), sub: 'competing all-time' },
       { label: 'Events attended', value: fmt(eventIds.size), sub: fmt(parts.length) + ' team entries' },

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoboDawgs Record Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Graduate&family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --paper: #faf7f0;
+  --paper-2: #f2eee2;
+  --ink: #17150f;
+  --ink-2: #57534a;
+  --ink-3: #8a8577;
+  --rule: #d9d2c0;
+  --rule-dark: #17150f;
+  --green: #1c7a3f;       /* school green — single-series bar hue, >=3:1 on paper */
+  --green-deep: #14522b;
+  --red: #a82424;          /* school red — chrome accent, 6.7:1 on paper */
+  --green-wash: rgba(28, 122, 63, 0.07);
+  /* validated light-mode chart series (surface #faf7f0, adjacent gates pass) */
+  --series-hs: #2a78d6;   /* blue   — High School */
+  --series-ms: #eb6834;   /* orange — Middle School */
+  --series-es: #1baf7a;   /* aqua   — Elementary */
+  --series-ai: #eda100;   /* gold   — VEX AI */
+  --grid-line: #e7e1d2;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Archivo', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.55;
+}
+
+.container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem 2rem; }
+
+/* ===== Masthead ===== */
+.topbar { background: var(--green-deep); height: 16px; border-bottom: 4px solid var(--red); }
+header { text-align: center; padding: 2.2rem 0 1.4rem; }
+.masthead-kicker {
+  font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--ink-2); margin-bottom: 0.4rem;
+}
+h1 {
+  font-family: 'Graduate', serif;
+  color: var(--green-deep);
+  font-size: clamp(1.7rem, 5vw, 3rem);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+.masthead-sub {
+  display: inline-block;
+  margin-top: 0.6rem; padding-top: 0.55rem;
+  border-top: 1px solid var(--red);
+  font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-2);
+}
+.double-rule { border: 0; border-top: 3px double var(--ink); margin: 0 0 1.25rem; height: 5px; border-bottom: 1px solid var(--ink); }
+
+/* ===== Filter row ===== */
+.filters {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.1rem;
+  padding: 0.7rem 0.2rem; margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  position: sticky; top: 0; background: var(--paper); z-index: 50;
+}
+.tab {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Archivo Narrow', 'Archivo', sans-serif;
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-3); padding: 0.25rem 0.1rem;
+  border-bottom: 3px solid transparent;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--green-deep); border-bottom-color: var(--red); }
+.filters select, .filters input[type="search"] {
+  background: var(--paper); border: 1px solid var(--rule);
+  color: var(--ink); padding: 0.3rem 0.55rem;
+  font-family: inherit; font-size: 0.83rem; border-radius: 0;
+}
+.filters input[type="search"] { min-width: 210px; flex: 1; }
+.filters select:focus, .filters input:focus { outline: none; border-color: var(--ink); }
+.filter-count { font-size: 0.75rem; color: var(--ink-3); margin-left: auto; white-space: nowrap; }
+
+/* ===== Record wall (KPIs) ===== */
+.kpis {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--ink); background: var(--rule);
+  gap: 1px; margin-bottom: 1.75rem;
+}
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+.stat-tile { background: var(--paper); padding: 1rem 1.1rem 0.85rem; }
+.stat-tile .label {
+  font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2);
+}
+.stat-tile .value { font-size: 2.3rem; font-weight: 700; line-height: 1.15; color: var(--ink); }
+.stat-tile .sub { font-size: 0.72rem; color: var(--ink-3); }
+.stat-tile.hero { background: var(--green-deep); }
+.stat-tile.hero .label { color: #f0c9c9; }
+.stat-tile.hero .value { color: #fdfaf2; font-size: 2.7rem; }
+.stat-tile.hero .sub { color: #c9d8c5; }
+
+/* ===== Sections & panels ===== */
+.section-head { display: flex; align-items: baseline; gap: 0.9rem; flex-wrap: wrap; margin: 0 0 0.8rem; }
+.section-head h2 {
+  font-family: 'Graduate', serif; font-weight: 400;
+  font-size: 1.05rem; letter-spacing: 0.08em;
+  color: var(--green-deep);
+  border-bottom: 3px solid var(--red); padding-bottom: 0.1rem;
+}
+.section-head .rule { flex: 1; height: 1px; background: var(--rule); min-width: 40px; align-self: center; }
+.section-head .hint { font-size: 0.72rem; color: var(--ink-3); letter-spacing: 0.05em; }
+.section-head .toggle {
+  background: none; border: 1px solid var(--rule); color: var(--ink-2);
+  padding: 0.12rem 0.6rem; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; font-family: inherit;
+}
+.section-head .toggle:hover { border-color: var(--ink); color: var(--ink); }
+
+.panel { border: 1px solid var(--rule); background: #fffdf7; padding: 1.1rem 1.2rem; }
+section { margin-bottom: 2rem; }
+
+.charts-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 1.5rem; }
+@media (max-width: 980px) { .charts-grid { grid-template-columns: 1fr; } }
+
+.legend { display: flex; flex-wrap: wrap; gap: 0.9rem; font-size: 0.75rem; color: var(--ink-2); }
+.legend .key { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend .swatch { width: 11px; height: 11px; display: inline-block; }
+
+.chart-scroll { overflow-x: auto; }
+svg text { font-family: 'Archivo', sans-serif; }
+.axis-text { fill: var(--ink-3); font-size: 11px; }
+.tick-num { font-variant-numeric: tabular-nums; }
+.bar-label { fill: var(--ink-2); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.viz-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.viz-table th, .viz-table td { padding: 0.32rem 0.6rem; text-align: right; border-bottom: 1px solid var(--rule); }
+.viz-table th:first-child, .viz-table td:first-child { text-align: left; }
+.viz-table th { color: var(--ink-2); font-weight: 600; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.viz-table td { font-variant-numeric: tabular-nums; }
+
+/* tooltip */
+#tooltip {
+  position: fixed; pointer-events: none; z-index: 200; display: none;
+  background: var(--ink); color: #fdfaf2;
+  padding: 0.5rem 0.7rem; font-size: 0.78rem;
+  box-shadow: 3px 3px 0 rgba(23, 21, 15, 0.18); max-width: 320px;
+}
+#tooltip .tt-title { color: #b9b3a4; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.25rem; }
+#tooltip .tt-row { display: flex; align-items: center; gap: 0.45rem; }
+#tooltip .tt-key { width: 12px; height: 3px; display: inline-block; }
+#tooltip .tt-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+#tooltip .tt-name { color: #b9b3a4; }
+
+/* ===== Data tables ===== */
+.data-table-wrap { overflow-x: auto; max-height: 560px; overflow-y: auto; border: 1px solid var(--ink); }
+table.data { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+table.data thead th {
+  position: sticky; top: 0; background: var(--green-deep); color: #eef3ea;
+  font-size: 0.67rem; letter-spacing: 0.14em; text-transform: uppercase;
+  text-align: left; padding: 0.5rem 0.7rem;
+  cursor: pointer; user-select: none; white-space: nowrap; z-index: 2;
+}
+table.data thead th.num { text-align: right; }
+table.data thead th:hover { color: #9fd9b4; }
+table.data tbody td { padding: 0.38rem 0.7rem; border-top: 1px solid var(--rule); }
+table.data tbody tr:nth-child(even) td { background: var(--green-wash); }
+table.data tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.data tbody tr:hover td { background: var(--paper-2); }
+.team-no {
+  font-family: 'Graduate', serif; font-size: 0.8rem; letter-spacing: 0.04em;
+  color: var(--ink); white-space: nowrap;
+}
+.team-name { color: var(--ink-3); font-size: 0.76rem; }
+.div-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.76rem; color: var(--ink-2); white-space: nowrap; }
+.div-dot { width: 9px; height: 9px; display: inline-block; }
+.champ-mark { font-weight: 700; }
+.star { color: var(--red); }
+
+.show-more { margin-top: 0.7rem; text-align: center; }
+.show-more button {
+  background: none; border: 1px solid var(--ink); color: var(--ink);
+  padding: 0.35rem 1.4rem; cursor: pointer; font-family: inherit;
+  font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.show-more button:hover { background: var(--ink); color: var(--paper); }
+
+/* ===== Banner wall ===== */
+.banners { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: flex-start; }
+.banner {
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
+  width: 150px; min-height: 150px; padding: 0.8rem 0.7rem 2.2rem;
+  color: #fdfaf2; text-align: center;
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.banner.t-worlds { background: var(--red); }
+.banner.t-nationals { background: var(--ink); }
+.banner.t-states { background: var(--green-deep); }
+.banner .b-year { font-family: 'Graduate', serif; font-size: 1.25rem; line-height: 1.2; }
+.banner .b-tier { font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; border-top: 1px solid rgba(253,250,242,0.4); border-bottom: 1px solid rgba(253,250,242,0.4); padding: 0.15rem 0; margin: 0.2rem 0; }
+.banner .b-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; line-height: 1.3; }
+.banner .b-team { font-family: 'Graduate', serif; font-size: 0.95rem; margin-top: auto; }
+.banner .b-event { font-size: 0.6rem; opacity: 0.75; line-height: 1.25; }
+.tier-tag {
+  display: inline-block; margin-left: 0.45rem; padding: 0 0.35rem;
+  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+  border: 1px solid currentColor;
+}
+.tier-tag.t-worlds { color: var(--red); }
+.tier-tag.t-nationals { color: var(--ink); }
+.tier-tag.t-states { color: var(--green); }
+
+footer {
+  text-align: center; color: var(--ink-3); font-size: 0.72rem;
+  border-top: 3px double var(--ink); margin-top: 2.5rem; padding-top: 0.8rem;
+  letter-spacing: 0.04em;
+}
+.hidden { display: none !important; }
+.empty-note { color: var(--ink-3); font-size: 0.85rem; text-align: center; padding: 2rem 0; }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<div class="container">
+
+  <header>
+    <div class="masthead-kicker">Grandville Public Schools · Competitive Robotics</div>
+    <h1>RoboDawgs Record Book</h1>
+    <span class="masthead-sub">All-Time Awards &amp; Competition Results · Est. 1998</span>
+  </header>
+  <hr class="double-rule">
+
+  <!-- Filters scope everything below -->
+  <div class="filters" id="filterRow">
+    <span id="divisionChips"></span>
+    <select id="seasonSelect" aria-label="Season filter"><option value="all">All seasons</option></select>
+    <input type="search" id="searchBox" placeholder="Search team #, award, event…" aria-label="Search">
+    <span class="filter-count" id="filterCount"></span>
+  </div>
+
+  <div class="kpis" id="kpiRow"></div>
+
+  <section id="bannerSection">
+    <div class="section-head">
+      <h2>Championship Banners</h2>
+      <span class="rule"></span>
+      <span class="hint" id="bannerCount"></span>
+    </div>
+    <div class="banners" id="bannerWall"></div>
+  </section>
+
+  <section>
+    <div class="charts-grid">
+      <div>
+        <div class="section-head">
+          <h2>Awards by Season</h2>
+          <span class="rule"></span>
+          <span class="legend" id="seasonLegend"></span>
+          <button class="toggle" data-toggle="seasonChart">table</button>
+        </div>
+        <div class="panel">
+          <div class="chart-scroll" id="seasonChart"></div>
+          <div class="hidden" id="seasonChart-table"></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-head">
+          <h2>Top Award Types</h2>
+          <span class="rule"></span>
+          <button class="toggle" data-toggle="typeChart">table</button>
+        </div>
+        <div class="panel">
+          <div id="typeChart"></div>
+          <div class="hidden" id="typeChart-table"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Team Leaderboard</h2>
+      <span class="rule"></span>
+      <span class="hint">click a column to sort</span>
+    </div>
+    <div class="data-table-wrap"><table class="data" id="leaderboard"></table></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Award History</h2>
+      <span class="rule"></span>
+      <span class="hint" id="awardHistCount"></span>
+    </div>
+    <div class="data-table-wrap"><table class="data" id="awardTable"></table></div>
+    <div class="show-more"><button id="showMoreAwards">Show more</button></div>
+  </section>
+
+  <footer id="pageFooter"></footer>
+</div>
+
+<div id="tooltip" role="status"></div>
+
+<script src="robodawgs-data.js"></script>
+<script>
+'use strict';
+(function () {
+  const D = window.ROBODAWGS_DATA;
+  if (!D) {
+    document.getElementById('kpiRow').innerHTML =
+      '<div class="stat-tile" style="grid-column:1/-1"><div class="label">No data</div>' +
+      '<div class="sub">robodawgs-data.js not found — run <code>python3 harvest.py</code> first.</div></div>';
+    return;
+  }
+
+  // ===== derived structures =====
+  const eventsById = new Map(D.events.map(e => [e.id, e]));
+  const teamsById = new Map(D.teams.map(t => [t.id, t]));
+
+  const DIVISIONS = [
+    { key: 'HS', name: 'High School',   hex: '#2a78d6' },
+    { key: 'MS', name: 'Middle School', hex: '#eb6834' },
+    { key: 'ES', name: 'Elementary',    hex: '#1baf7a' },
+    { key: 'AI', name: 'VEX AI',        hex: '#eda100' },
+  ];
+  const divByKey = new Map(DIVISIONS.map(d => [d.key, d]));
+
+  function divisionOf(team) {
+    if (!team) return 'HS';
+    if ((team.program || '').startsWith('VAI') || team.programId === 57 || team.programId === 48) return 'AI';
+    const g = (team.grade || '').toLowerCase();
+    if (g.includes('elementary')) return 'ES';
+    if (g.includes('middle')) return 'MS';
+    if (g.includes('high')) return 'HS';
+    return team.program === 'VIQRC' ? 'ES' : 'HS';
+  }
+  D.teams.forEach(t => { t.division = divisionOf(t); });
+
+  // School-year label from an event date: Jul–Dec = start of that year's season
+  // (June belongs to the ENDING season — the VEX AI Worlds run in early June)
+  function seasonYearOf(ev) {
+    if (!ev || !ev.start) return null;
+    const y = +ev.start.slice(0, 4), m = +ev.start.slice(5, 7);
+    return m >= 7 ? y : y - 1;
+  }
+  const yearLabel = y => y + '–' + String((y + 1) % 100).padStart(2, '0');
+
+  // Clean award titles: "Excellence Award (VRC/VEXU/VAIRC)" -> "Excellence Award"
+  const cleanTitle = t => (t || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+
+  // Event tier: RobotEvents "level" is unreliable (the 2024 VEX AI Worlds is marked
+  // "Regional"), so classify by name first, then level.
+  function tierOf(ev) {
+    if (!ev) return 'Local';
+    const n = (ev.name || '').toLowerCase();
+    // "world championship" plus the VEX AI championships, which are inconsistently
+    // named (2021 "VAIC-HS In-Person Championship", 2025 "VEX AI Robotics Competition
+    // Championship") — all are that season's culminating world-level event.
+    if (/world championship|world skills|vaic.*championship hosted by the rec|vex ?ai robotics (competition )?championship/.test(n)) return 'Worlds';
+    if (/u\.s\. open|us open|national championship/.test(n) || ev.level === 'Signature') return 'Nationals';
+    if (/state championship/.test(n) || ev.level === 'Regional') return 'States';
+    return 'Local';
+  }
+  const TIER_LABEL = { Worlds: 'World Championship', Nationals: 'National / Signature', States: 'State Championship' };
+
+  // Attach event/season info to awards, rankings, skills
+  D.awards.forEach(a => {
+    const ev = eventsById.get(a.eventId);
+    a.year = seasonYearOf(ev);
+    a.season = ev ? ev.season : '';
+    a.date = ev ? ev.start : '';
+    a.level = ev ? ev.level : '';
+    a.shortTitle = cleanTitle(a.title);
+    a.tier = tierOf(eventsById.get(a.eventId));
+    const team = teamsById.get(a.teamId);
+    a.division = team ? team.division : 'HS';
+    a.isChamp = /champion/i.test(a.title);
+    a.isExcellence = /excellence/i.test(a.title);
+  });
+  D.rankings.forEach(r => {
+    const ev = eventsById.get(r.eventId);
+    r.year = seasonYearOf(ev);
+    const team = teamsById.get(r.teamId);
+    r.division = team ? team.division : 'HS';
+    r.headToHead = !team || team.program !== 'VIQRC';  // IQ is cooperative — no real W/L/T
+  });
+  D.skills.forEach(s => {
+    const ev = eventsById.get(s.eventId);
+    s.year = seasonYearOf(ev);
+    const team = teamsById.get(s.teamId);
+    s.division = team ? team.division : 'HS';
+  });
+
+  // team-event participations with year (for events-attended + Worlds stats)
+  const participations = [];
+  D.teams.forEach(t => (t.eventIds || []).forEach(eid => {
+    const ev = eventsById.get(eid);
+    if (ev) participations.push({ teamId: t.id, teamNumber: t.number, division: t.division, event: ev, year: seasonYearOf(ev), tier: tierOf(ev) });
+  }));
+
+  const allYears = [...new Set(D.awards.map(a => a.year).filter(y => y != null))].sort((a, b) => a - b);
+
+  // ===== filter state =====
+  const state = { division: 'all', year: 'all', q: '' };
+
+  function textMatch(...fields) {
+    if (!state.q) return true;
+    const q = state.q.toLowerCase();
+    return fields.some(f => f && String(f).toLowerCase().includes(q));
+  }
+  function awardInScope(a) {
+    if (state.division !== 'all' && a.division !== state.division) return false;
+    if (state.year !== 'all' && a.year !== +state.year) return false;
+    return textMatch(a.teamNumber, a.shortTitle, a.eventName, a.season);
+  }
+  function partInScope(p) {
+    if (state.division !== 'all' && p.division !== state.division) return false;
+    if (state.year !== 'all' && p.year !== +state.year) return false;
+    return textMatch(p.teamNumber, p.event.name, p.event.season);
+  }
+  function rankInScope(r) {
+    if (state.division !== 'all' && r.division !== state.division) return false;
+    if (state.year !== 'all' && r.year !== +state.year) return false;
+    if (!state.q) return true;
+    const ev = eventsById.get(r.eventId);
+    return textMatch(r.teamNumber, ev && ev.name, ev && ev.season);
+  }
+
+  // ===== helpers =====
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const fmt = n => n.toLocaleString('en-US');
+
+  // ===== tooltip =====
+  const tip = document.getElementById('tooltip');
+  function showTip(x, y, title, rows) {
+    tip.textContent = '';
+    tip.appendChild(el('div', 'tt-title', title));
+    rows.forEach(([color, name, val]) => {
+      const r = el('div', 'tt-row');
+      const k = el('span', 'tt-key'); k.style.background = color;
+      r.appendChild(k);
+      r.appendChild(el('span', 'tt-val', val));
+      r.appendChild(el('span', 'tt-name', name));
+      tip.appendChild(r);
+    });
+    tip.style.display = 'block';
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    tip.style.left = Math.min(x + 14, window.innerWidth - w - 10) + 'px';
+    tip.style.top = Math.min(y + 14, window.innerHeight - h - 10) + 'px';
+  }
+  const hideTip = () => { tip.style.display = 'none'; };
+
+  // ===== KPI row =====
+  function renderKPIs(awards, parts, ranks) {
+    const row = document.getElementById('kpiRow');
+    row.textContent = '';
+
+    const majors = awards.filter(a => a.isChamp && a.tier !== 'Local');
+    const worldsT = majors.filter(a => a.tier === 'Worlds').length;
+    const natT = majors.filter(a => a.tier === 'Nationals').length;
+    const stateT = majors.filter(a => a.tier === 'States').length;
+    const localChamps = awards.filter(a => a.isChamp && a.tier === 'Local').length;
+    const excellence = awards.filter(a => a.isExcellence).length;
+    const teamNums = new Set(awards.map(a => a.teamNumber));
+    parts.forEach(p => teamNums.add(p.teamNumber));
+    const eventIds = new Set(parts.map(p => p.event.id));
+    const worlds = new Set(parts.filter(p => p.tier === 'Worlds').map(p => p.teamNumber + '|' + p.event.id));
+    let w = 0, l = 0, t = 0;
+    ranks.forEach(r => { if (!r.headToHead) return; w += r.wins || 0; l += r.losses || 0; t += r.ties || 0; });
+    const winPct = (w + l + t) ? Math.round(100 * w / (w + l + t)) : null;
+    const years = new Set(parts.map(p => p.year).filter(y => y != null));
+
+    const tiles = [
+      { label: 'Total awards', value: fmt(awards.length), hero: true, sub: 'recorded on RobotEvents' },
+      { label: 'Major championships', value: fmt(majors.length), sub: `${fmt(worldsT)} Worlds · ${fmt(natT)} National · ${fmt(stateT)} State` },
+      { label: 'Event championships', value: fmt(localChamps), sub: 'local tournament titles' },
+      { label: 'Excellence Awards', value: fmt(excellence), sub: 'judged best overall' },
+      { label: 'Teams', value: fmt(teamNums.size), sub: 'competing all-time' },
+      { label: 'Events attended', value: fmt(eventIds.size), sub: fmt(parts.length) + ' team entries' },
+      { label: 'Worlds entries', value: fmt(worlds.size), sub: `across ${fmt(years.size)} seasons` },
+      { label: 'Match record', value: winPct == null ? '—' : winPct + '%', sub: `${fmt(w)} W – ${fmt(l)} L – ${fmt(t)} T` },
+    ];
+    tiles.forEach(td => {
+      const tile = el('div', 'stat-tile' + (td.hero ? ' hero' : ''));
+      tile.appendChild(el('div', 'label', td.label));
+      tile.appendChild(el('div', 'value', td.value));
+      if (td.sub) tile.appendChild(el('div', 'sub', td.sub));
+      row.appendChild(tile);
+    });
+  }
+
+  // ===== Chart: awards by season (stacked columns by division) =====
+  function renderSeasonChart(awards) {
+    const host = document.getElementById('seasonChart');
+    const tableHost = document.getElementById('seasonChart-table');
+    host.textContent = ''; tableHost.textContent = '';
+
+    const years = state.year === 'all' ? allYears : [+state.year];
+    const activeDivs = state.division === 'all' ? DIVISIONS : DIVISIONS.filter(d => d.key === state.division);
+
+    // counts[year][divKey]
+    const counts = new Map(years.map(y => [y, Object.fromEntries(activeDivs.map(d => [d.key, 0]))]));
+    awards.forEach(a => {
+      if (a.year == null || !counts.has(a.year)) return;
+      const c = counts.get(a.year);
+      if (a.division in c) c[a.division]++;
+    });
+
+    // legend
+    const legend = document.getElementById('seasonLegend');
+    legend.textContent = '';
+    if (activeDivs.length > 1) activeDivs.forEach(d => {
+      const k = el('span', 'key');
+      const sw = el('span', 'swatch'); sw.style.background = d.hex;
+      k.appendChild(sw); k.appendChild(document.createTextNode(d.name));
+      legend.appendChild(k);
+    });
+
+    if (!years.length || awards.length === 0) { host.appendChild(el('div', 'empty-note', 'No awards in this view')); return; }
+
+    const totals = years.map(y => activeDivs.reduce((s, d) => s + counts.get(y)[d.key], 0));
+    const maxV = Math.max(1, ...totals);
+
+    const M = { top: 24, right: 12, bottom: 34, left: 40 };
+    const bw = Math.min(24, Math.max(12, Math.floor(560 / years.length)));
+    const slot = Math.max(bw + 14, Math.floor(720 / years.length));
+    const W = M.left + M.right + slot * years.length;
+    const H = 300;
+    const plotH = H - M.top - M.bottom;
+
+    // clean y ticks
+    const step = maxV <= 5 ? 1 : maxV <= 20 ? 5 : maxV <= 60 ? 10 : maxV <= 120 ? 25 : 50;
+    const yMax = Math.ceil(maxV / step) * step;
+    const yScale = v => M.top + plotH - (v / yMax) * plotH;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', W); svg.setAttribute('height', H);
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Stacked column chart of awards per season by division');
+
+    // gridlines + y ticks
+    for (let v = 0; v <= yMax; v += step) {
+      const y = yScale(v);
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('x1', M.left); line.setAttribute('x2', W - M.right);
+      line.setAttribute('y1', y); line.setAttribute('y2', y);
+      line.setAttribute('stroke', v === 0 ? 'var(--rule)' : 'var(--grid-line)');
+      line.setAttribute('stroke-width', '1');
+      svg.appendChild(line);
+      const tx = document.createElementNS(NS, 'text');
+      tx.setAttribute('x', M.left - 8); tx.setAttribute('y', y + 4);
+      tx.setAttribute('text-anchor', 'end');
+      tx.setAttribute('class', 'axis-text tick-num');
+      tx.textContent = fmt(v);
+      svg.appendChild(tx);
+    }
+
+    const GAP = 2; // surface gap between stacked segments
+    years.forEach((yr, i) => {
+      const cx = M.left + slot * i + slot / 2;
+      let acc = 0;
+      activeDivs.forEach(d => {
+        const v = counts.get(yr)[d.key];
+        if (!v) return;
+        const y0 = yScale(acc), y1 = yScale(acc + v);
+        const isBase = acc === 0;
+        const rect = document.createElementNS(NS, 'rect');
+        rect.setAttribute('x', cx - bw / 2);
+        rect.setAttribute('y', y1);
+        const hRaw = y0 - y1 - (isBase ? 0 : GAP);
+        rect.setAttribute('height', Math.max(1, hRaw));
+        rect.setAttribute('width', bw);
+        rect.setAttribute('fill', d.hex);
+        svg.appendChild(rect);
+        acc += v;
+      });
+      // rounded cap on top of the stack (4px data-end, square baseline)
+      if (acc > 0) {
+        const topY = yScale(acc);
+        const cap = document.createElementNS(NS, 'path');
+        const topDiv = [...activeDivs].reverse().find(d => counts.get(yr)[d.key] > 0);
+        const r = 4;
+        cap.setAttribute('d', `M ${cx - bw / 2} ${topY + r} Q ${cx - bw / 2} ${topY} ${cx - bw / 2 + r} ${topY} L ${cx + bw / 2 - r} ${topY} Q ${cx + bw / 2} ${topY} ${cx + bw / 2} ${topY + r} Z`);
+        cap.setAttribute('fill', topDiv ? topDiv.hex : 'var(--green)');
+        svg.appendChild(cap);
+        // selective label: only the max year
+        if (acc === maxV) {
+          const lbl = document.createElementNS(NS, 'text');
+          lbl.setAttribute('x', cx); lbl.setAttribute('y', topY - 6);
+          lbl.setAttribute('text-anchor', 'middle');
+          lbl.setAttribute('class', 'bar-label');
+          lbl.textContent = fmt(acc);
+          svg.appendChild(lbl);
+        }
+      }
+      // x label
+      const tx = document.createElementNS(NS, 'text');
+      tx.setAttribute('x', cx); tx.setAttribute('y', H - 12);
+      tx.setAttribute('text-anchor', 'middle');
+      tx.setAttribute('class', 'axis-text');
+      tx.textContent = years.length > 12 ? "'" + String(yr).slice(2) : yearLabel(yr);
+      svg.appendChild(tx);
+
+      // hover hit target: full column slot
+      const hit = document.createElementNS(NS, 'rect');
+      hit.setAttribute('x', M.left + slot * i); hit.setAttribute('y', M.top);
+      hit.setAttribute('width', slot); hit.setAttribute('height', plotH);
+      hit.setAttribute('fill', 'transparent');
+      hit.setAttribute('tabindex', '0');
+      const c = counts.get(yr);
+      const total = activeDivs.reduce((s, d) => s + c[d.key], 0);
+      const rows = activeDivs.filter(d => c[d.key] > 0).map(d => [d.hex, d.name, fmt(c[d.key])]);
+      if (rows.length > 1) rows.push(['#8a8577', 'Total', fmt(total)]);
+      hit.addEventListener('pointermove', evn => showTip(evn.clientX, evn.clientY, yearLabel(yr) + ' season', rows));
+      hit.addEventListener('focus', () => {
+        const r2 = hit.getBoundingClientRect();
+        showTip(r2.left + r2.width / 2, r2.top, yearLabel(yr) + ' season', rows);
+      });
+      hit.addEventListener('pointerleave', hideTip);
+      hit.addEventListener('blur', hideTip);
+      svg.appendChild(hit);
+    });
+
+    host.appendChild(svg);
+
+    // table twin
+    const tbl = el('table', 'viz-table');
+    const thead = el('thead'); const trh = el('tr');
+    trh.appendChild(el('th', null, 'Season'));
+    activeDivs.forEach(d => trh.appendChild(el('th', null, d.name)));
+    trh.appendChild(el('th', null, 'Total'));
+    thead.appendChild(trh); tbl.appendChild(thead);
+    const tbody = el('tbody');
+    years.forEach(yr => {
+      const c = counts.get(yr);
+      const tr = el('tr');
+      tr.appendChild(el('td', null, yearLabel(yr)));
+      let tot = 0;
+      activeDivs.forEach(d => { tr.appendChild(el('td', null, fmt(c[d.key]))); tot += c[d.key]; });
+      tr.appendChild(el('td', null, fmt(tot)));
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    tableHost.appendChild(tbl);
+  }
+
+  // ===== Chart: top award types (horizontal bars, single hue) =====
+  function renderTypeChart(awards) {
+    const host = document.getElementById('typeChart');
+    const tableHost = document.getElementById('typeChart-table');
+    host.textContent = ''; tableHost.textContent = '';
+
+    const counts = new Map();
+    awards.forEach(a => counts.set(a.shortTitle, (counts.get(a.shortTitle) || 0) + 1));
+    const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+    const TOP = 10;
+    const top = sorted.slice(0, TOP);
+    const otherCount = sorted.slice(TOP).reduce((s, [, v]) => s + v, 0);
+    const rows = otherCount ? [...top, [`Other (${sorted.length - TOP} types)`, otherCount]] : top;
+
+    if (!rows.length) { host.appendChild(el('div', 'empty-note', 'No awards in this view')); return; }
+
+    const maxV = Math.max(...rows.map(r => r[1]));
+    const NS = 'http://www.w3.org/2000/svg';
+    const rowH = 26, barH = 13, labelH = 15;
+    const M = { top: 6, right: 52, bottom: 6, left: 6 };
+    const W = 460;
+    const H = M.top + M.bottom + rows.length * (rowH + labelH);
+    const plotW = W - M.left - M.right;
+
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Bar chart of most common award types');
+    svg.style.maxWidth = W + 'px';
+
+    rows.forEach(([name, v], i) => {
+      const yTop = M.top + i * (rowH + labelH);
+      const barY = yTop + labelH + (rowH - labelH - barH) / 2 + 2;
+      const w = Math.max(2, (v / maxV) * plotW);
+
+      const lbl = document.createElementNS(NS, 'text');
+      lbl.setAttribute('x', M.left); lbl.setAttribute('y', yTop + 11);
+      lbl.setAttribute('class', 'axis-text');
+      lbl.setAttribute('fill', '#57534a');
+      lbl.textContent = name;
+      svg.appendChild(lbl);
+
+      const bar = document.createElementNS(NS, 'path');
+      const r = 4;
+      bar.setAttribute('d', `M ${M.left} ${barY} L ${M.left + w - r} ${barY} Q ${M.left + w} ${barY} ${M.left + w} ${barY + r} L ${M.left + w} ${barY + barH - r} Q ${M.left + w} ${barY + barH} ${M.left + w - r} ${barY + barH} L ${M.left} ${barY + barH} Z`);
+      bar.setAttribute('fill', 'var(--green)');
+      svg.appendChild(bar);
+
+      const val = document.createElementNS(NS, 'text');
+      val.setAttribute('x', M.left + w + 8); val.setAttribute('y', barY + barH - 2);
+      val.setAttribute('class', 'bar-label');
+      val.textContent = fmt(v);
+      svg.appendChild(val);
+
+      const hit = document.createElementNS(NS, 'rect');
+      hit.setAttribute('x', 0); hit.setAttribute('y', yTop);
+      hit.setAttribute('width', W); hit.setAttribute('height', rowH + labelH);
+      hit.setAttribute('fill', 'transparent');
+      hit.setAttribute('tabindex', '0');
+      hit.addEventListener('pointermove', e => showTip(e.clientX, e.clientY, name, [['#1c7a3f', 'awards', fmt(v)]]));
+      hit.addEventListener('pointerleave', hideTip);
+      hit.addEventListener('blur', hideTip);
+      svg.appendChild(hit);
+    });
+
+    host.appendChild(svg);
+
+    const tbl = el('table', 'viz-table');
+    const trh = el('tr');
+    trh.appendChild(el('th', null, 'Award'));
+    trh.appendChild(el('th', null, 'Count'));
+    tbl.appendChild(trh);
+    const tbody = el('tbody');
+    sorted.forEach(([name, v]) => {
+      const tr = el('tr');
+      tr.appendChild(el('td', null, name));
+      tr.appendChild(el('td', null, fmt(v)));
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    tableHost.appendChild(tbl);
+  }
+
+  // ===== Banner wall: champion titles at States and above =====
+  function renderBanners(awards) {
+    const wall = document.getElementById('bannerWall');
+    const section = document.getElementById('bannerSection');
+    wall.textContent = '';
+    const TIER_RANK = { Worlds: 0, Nationals: 1, States: 2 };
+    const majors = awards
+      .filter(a => a.isChamp && a.tier !== 'Local')
+      .sort((a, b) => (TIER_RANK[a.tier] - TIER_RANK[b.tier]) || (b.date || '').localeCompare(a.date || ''));
+    section.classList.toggle('hidden', majors.length === 0);
+    document.getElementById('bannerCount').textContent = `${fmt(majors.length)} major titles`;
+    majors.forEach(a => {
+      const b = el('div', 'banner t-' + a.tier.toLowerCase());
+      b.appendChild(el('div', 'b-year', a.year != null ? yearLabel(a.year) : ''));
+      b.appendChild(el('div', 'b-tier', TIER_LABEL[a.tier] || a.tier));
+      b.appendChild(el('div', 'b-title', a.shortTitle));
+      b.appendChild(el('div', 'b-team', a.teamNumber));
+      b.appendChild(el('div', 'b-event', a.eventName.length > 70 ? a.eventName.slice(0, 67) + '…' : a.eventName));
+      wall.appendChild(b);
+    });
+  }
+
+  // ===== Team leaderboard =====
+  let lbSort = { col: 'awards', dir: -1 };
+  function renderLeaderboard(awards, parts, ranks) {
+    const table = document.getElementById('leaderboard');
+    table.textContent = '';
+
+    const byTeam = new Map();
+    function slot(num, division) {
+      if (!byTeam.has(num)) byTeam.set(num, { number: num, division, awards: 0, champs: 0, majors: 0, excellence: 0, events: new Set(), w: 0, l: 0, t: 0, bestSkills: null, names: new Set() });
+      return byTeam.get(num);
+    }
+    awards.forEach(a => {
+      const s = slot(a.teamNumber, a.division);
+      s.awards++; if (a.isChamp) s.champs++; if (a.isChamp && a.tier !== 'Local') s.majors++; if (a.isExcellence) s.excellence++;
+    });
+    parts.forEach(p => {
+      const s = slot(p.teamNumber, p.division);
+      s.events.add(p.event.id);
+      const team = teamsById.get(p.teamId);
+      if (team && team.name) s.names.add(team.name);
+    });
+    ranks.forEach(r => {
+      const s = slot(r.teamNumber, r.division);
+      if (!r.headToHead) { s.coop = true; return; }
+      s.w += r.wins || 0; s.l += r.losses || 0; s.t += r.ties || 0;
+    });
+    D.skills.forEach(sk => {
+      if (!byTeam.has(sk.teamNumber)) return;
+      if (state.year !== 'all' && sk.year !== +state.year) return;
+      const s = byTeam.get(sk.teamNumber);
+      if (sk.score != null && (s.bestSkills == null || sk.score > s.bestSkills)) s.bestSkills = sk.score;
+    });
+
+    const list = [...byTeam.values()];
+    list.forEach(s => {
+      s.eventCount = s.events.size;
+      const g = s.w + s.l + s.t;
+      s.winPct = g ? s.w / g : -1;
+    });
+
+    const cols = [
+      { key: 'number', label: 'Team', num: false },
+      { key: 'division', label: 'Division', num: false },
+      { key: 'awards', label: 'Awards', num: true },
+      { key: 'champs', label: 'Champ.', num: true },
+      { key: 'majors', label: 'Major', num: true },
+      { key: 'excellence', label: 'Excel.', num: true },
+      { key: 'eventCount', label: 'Events', num: true },
+      { key: 'record', label: 'W–L–T', num: true },
+      { key: 'winPct', label: 'Win %', num: true },
+      { key: 'bestSkills', label: 'Best Skills', num: true },
+    ];
+    const sortKey = lbSort.col === 'record' ? 'w' : lbSort.col;
+    list.sort((a, b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (va == null) va = -Infinity; if (vb == null) vb = -Infinity;
+      if (typeof va === 'string') return lbSort.dir * va.localeCompare(vb, undefined, { numeric: true });
+      return lbSort.dir * (va - vb);
+    });
+
+    const thead = el('thead'); const trh = el('tr');
+    cols.forEach(c => {
+      const th = el('th', c.num ? 'num' : null, c.label + (lbSort.col === c.key ? (lbSort.dir < 0 ? ' ▾' : ' ▴') : ''));
+      th.addEventListener('click', () => {
+        if (lbSort.col === c.key) lbSort.dir *= -1;
+        else { lbSort.col = c.key; lbSort.dir = c.num ? -1 : 1; }
+        rerender();
+      });
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh); table.appendChild(thead);
+
+    const tbody = el('tbody');
+    list.forEach(s => {
+      const tr = el('tr');
+      const tdTeam = el('td');
+      tdTeam.appendChild(el('span', 'team-no', s.number));
+      if (s.names.size) tdTeam.appendChild(el('span', 'team-name', '  ' + [...s.names][s.names.size - 1]));
+      tr.appendChild(tdTeam);
+      const dv = divByKey.get(s.division);
+      const tdDiv = el('td');
+      const pill = el('span', 'div-pill');
+      const dot = el('span', 'div-dot'); dot.style.background = dv ? dv.hex : '#8a8577';
+      pill.appendChild(dot); pill.appendChild(document.createTextNode(dv ? dv.name : s.division));
+      tdDiv.appendChild(pill); tr.appendChild(tdDiv);
+      tr.appendChild(el('td', 'num', fmt(s.awards)));
+      const tdCh = el('td', 'num', fmt(s.champs)); if (s.champs) tdCh.classList.add('champ-mark'); tr.appendChild(tdCh);
+      const tdMj = el('td', 'num', s.majors ? fmt(s.majors) : '—'); if (s.majors) { tdMj.classList.add('champ-mark'); tdMj.style.color = 'var(--red)'; } tr.appendChild(tdMj);
+      tr.appendChild(el('td', 'num', fmt(s.excellence)));
+      tr.appendChild(el('td', 'num', fmt(s.eventCount)));
+      const noWLT = s.coop && !(s.w + s.l + s.t);
+      tr.appendChild(el('td', 'num', noWLT ? '—' : `${s.w}–${s.l}–${s.t}`));
+      tr.appendChild(el('td', 'num', (noWLT || s.winPct < 0) ? '—' : Math.round(s.winPct * 100) + '%'));
+      tr.appendChild(el('td', 'num', s.bestSkills == null ? '—' : fmt(s.bestSkills)));
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+  }
+
+  // ===== Award history table =====
+  let awardsShown = 100;
+  let awSort = { col: 'date', dir: -1 };
+  function renderAwardTable(awards) {
+    const table = document.getElementById('awardTable');
+    table.textContent = '';
+    const cols = [
+      { key: 'date', label: 'Date' },
+      { key: 'teamNumber', label: 'Team' },
+      { key: 'shortTitle', label: 'Award' },
+      { key: 'eventName', label: 'Event' },
+      { key: 'season', label: 'Season' },
+    ];
+    const sorted = [...awards].sort((a, b) => {
+      const va = a[awSort.col] || '', vb = b[awSort.col] || '';
+      return awSort.dir * String(va).localeCompare(String(vb), undefined, { numeric: true });
+    });
+
+    const thead = el('thead'); const trh = el('tr');
+    cols.forEach(c => {
+      const th = el('th', null, c.label + (awSort.col === c.key ? (awSort.dir < 0 ? ' ▾' : ' ▴') : ''));
+      th.addEventListener('click', () => {
+        if (awSort.col === c.key) awSort.dir *= -1;
+        else { awSort.col = c.key; awSort.dir = c.key === 'date' ? -1 : 1; }
+        rerender();
+      });
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh); table.appendChild(thead);
+
+    const tbody = el('tbody');
+    sorted.slice(0, awardsShown).forEach(a => {
+      const tr = el('tr');
+      const tdDate = el('td', null, a.date || '—'); tdDate.style.whiteSpace = 'nowrap'; tdDate.style.fontVariantNumeric = 'tabular-nums';
+      tr.appendChild(tdDate);
+      const tdTeam = el('td'); tdTeam.appendChild(el('span', 'team-no', a.teamNumber)); tr.appendChild(tdTeam);
+      const tdAward = el('td');
+      if (a.isChamp || a.isExcellence) {
+        tdAward.appendChild(el('span', 'star', '★ '));
+        tdAward.appendChild(el('strong', null, a.shortTitle));
+      } else {
+        tdAward.textContent = a.shortTitle;
+      }
+      if (a.tier !== 'Local') {
+        tdAward.appendChild(el('span', 'tier-tag t-' + a.tier.toLowerCase(),
+          a.tier === 'Worlds' ? 'Worlds' : a.tier === 'Nationals' ? 'National' : 'State'));
+      }
+      tr.appendChild(tdAward);
+      tr.appendChild(el('td', null, a.eventName));
+      const tdSeason = el('td', null, a.season || '—');
+      tdSeason.style.color = '#8a8577'; tdSeason.style.fontSize = '0.76rem';
+      tr.appendChild(tdSeason);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+
+    document.getElementById('awardHistCount').textContent =
+      `showing ${Math.min(awardsShown, sorted.length)} of ${fmt(sorted.length)}`;
+    document.getElementById('showMoreAwards').parentElement.classList.toggle('hidden', awardsShown >= sorted.length);
+  }
+  document.getElementById('showMoreAwards').addEventListener('click', () => { awardsShown += 250; rerender(); });
+
+  // ===== filters UI =====
+  function buildFilters() {
+    const chips = document.getElementById('divisionChips');
+    const all = [{ key: 'all', name: 'All Divisions' }, ...DIVISIONS];
+    all.forEach(d => {
+      const b = el('button', 'tab' + (state.division === d.key ? ' active' : ''), d.name);
+      b.addEventListener('click', () => {
+        state.division = d.key;
+        [...chips.children].forEach(c => c.classList.remove('active'));
+        b.classList.add('active');
+        rerender();
+      });
+      chips.appendChild(b);
+    });
+
+    const sel = document.getElementById('seasonSelect');
+    [...allYears].reverse().forEach(y => {
+      const o = el('option', null, yearLabel(y) + ' season');
+      o.value = y;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', () => { state.year = sel.value; rerender(); });
+
+    let debounce;
+    document.getElementById('searchBox').addEventListener('input', e => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => { state.q = e.target.value.trim(); awardsShown = 100; rerender(); }, 200);
+    });
+  }
+
+  // chart/table toggles
+  document.querySelectorAll('.toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.toggle;
+      const chart = document.getElementById(id);
+      const table = document.getElementById(id + '-table');
+      const showingTable = !table.classList.contains('hidden');
+      chart.classList.toggle('hidden', !showingTable);
+      table.classList.toggle('hidden', showingTable);
+      btn.textContent = showingTable ? 'table' : 'chart';
+    });
+  });
+
+  // ===== master render =====
+  function rerender() {
+    const awards = D.awards.filter(awardInScope);
+    const parts = participations.filter(partInScope);
+    const ranks = D.rankings.filter(rankInScope);
+    renderKPIs(awards, parts, ranks);
+    renderBanners(awards);
+    renderSeasonChart(awards);
+    renderTypeChart(awards);
+    renderLeaderboard(awards, parts, ranks);
+    renderAwardTable(awards);
+    document.getElementById('filterCount').textContent =
+      `${fmt(awards.length)} awards · ${fmt(new Set(parts.map(p => p.teamNumber)).size)} teams in view`;
+  }
+
+  document.getElementById('pageFooter').textContent =
+    `Data from RobotEvents · ${fmt(D.teams.length)} Grandville teams · last harvested ${D.generatedAt || 'unknown'} · re-run harvest.py to refresh`;
+
+  buildFilters();
+  rerender();
+})();
+</script>
+</body>
+</html>

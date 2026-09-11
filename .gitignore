@@ -1,0 +1,3 @@
+# never commit the RobotEvents API token
+.re_token
+.DS_Store

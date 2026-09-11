@@ -25,7 +25,14 @@ from pathlib import Path
 
 API = "https://events.vex.com/api/v2"
 DESK = Path(__file__).resolve().parent
-TOKEN = (DESK / ".re_token").read_text().strip()
+def _find_token():
+    for p in (DESK / ".re_token", Path.home() / ".re_token", Path.home() / "Desktop" / ".re_token"):
+        if p.exists():
+            return p.read_text().strip()
+    sys.exit("No .re_token file found (looked next to harvest.py, in ~, and on ~/Desktop)")
+
+
+TOKEN = _find_token()
 
 # Base team numbers (letters are swept A-Z automatically, plus the bare number)
 BASE_NUMBERS = [

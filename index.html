@@ -381,7 +381,7 @@ footer {
     a.tier = tierOf(eventsById.get(a.eventId));
     const team = teamsById.get(a.teamId);
     a.division = team ? team.division : 'HS';
-    a.isChamp = /champion/i.test(a.title);
+    a.isChamp = /tournament champion|teamwork champion/i.test(a.title);
     a.isExcellence = /excellence/i.test(a.title);
   });
   D.rankings.forEach(r => {
